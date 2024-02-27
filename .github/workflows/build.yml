@@ -1,0 +1,31 @@
+name: Build
+# Run workflow when manually triggered, part of a pull request or on a tag push (release)
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    name: "Windows Latest MSVC"
+    runs-on: windows-latest
+    steps:
+      - name: 'Checkout repo recursively.'
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: 'Install ninja-build tool.'
+        uses: seanmiddleditch/gha-setup-ninja@v3
+
+      - name: 'Windows: set up developer env'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: 'Configure via preset'
+        run: cmake --preset windows-debug
+
+      - name: 'Build using CMake and Ninja via CMake preset.'
+        run: cmake --build --preset windows-debug
